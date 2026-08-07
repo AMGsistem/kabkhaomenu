@@ -278,58 +278,12 @@ h1 .italic {
   overflow: hidden;
 }
 
-/* Overlay invisible para capturar clicks */
-.click-overlay {
-  position: absolute;
-  inset: 0;
-  z-index: 10;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.3s ease;
-}
-
-.click-overlay:hover {
-  background: rgba(0,0,0,0.08);
-}
-
-.expand-hint {
-  background: rgba(0,0,0,0.75);
-  color: white;
-  padding: 0.6rem 1.2rem;
-  border-radius: 100px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: all 0.3s ease;
-  pointer-events: none;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-}
-
-.click-overlay:hover .expand-hint {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.expand-hint svg {
-  width: 16px;
-  height: 16px;
-}
-
 .pdf-frame {
   width: 100%;
   height: 100%;
   border: none;
   background: white;
   transition: opacity 0.4s ease;
-  position: relative;
-  z-index: 1;
 }
 
 .pdf-frame.fade { opacity: 0; }
@@ -369,7 +323,6 @@ h1 .italic {
   text-align: center;
   padding: 2rem;
   background: linear-gradient(135deg, #fafaf7, #f0ede5);
-  pointer-events: none;
 }
 
 .placeholder svg {
@@ -403,75 +356,6 @@ h1 .italic {
   color: var(--accent);
 }
 
-/* Fullscreen overlay */
-.fullscreen-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.92);
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.fullscreen-overlay.active {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.fullscreen-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 1.5rem;
-  background: rgba(0,0,0,0.4);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  flex-shrink: 0;
-}
-
-.fullscreen-title {
-  color: white;
-  font-size: 0.9rem;
-  font-weight: 500;
-  font-family: ui-monospace, "SF Mono", Menlo, monospace;
-}
-
-.fullscreen-close {
-  background: rgba(255,255,255,0.15);
-  border: 1px solid rgba(255,255,255,0.2);
-  color: white;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  font-size: 1.3rem;
-  line-height: 1;
-}
-
-.fullscreen-close:hover {
-  background: rgba(255,255,255,0.25);
-  transform: scale(1.08);
-}
-
-.fullscreen-content {
-  flex: 1;
-  position: relative;
-}
-
-.fullscreen-frame {
-  width: 100%;
-  height: 100%;
-  border: none;
-  background: white;
-}
-
 footer {
   text-align: center;
   padding: 1.5rem 0 1rem;
@@ -499,9 +383,6 @@ footer .divider {
   .blob-1 { width: 300px; height: 300px; }
   .blob-2 { width: 380px; height: 380px; }
   .blob-3 { width: 260px; height: 260px; }
-  .fullscreen-header { padding: 0.8rem 1rem; }
-  .fullscreen-close { width: 40px; height: 40px; font-size: 1.2rem; }
-  .expand-hint { font-size: 0.75rem; padding: 0.5rem 1rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -517,17 +398,6 @@ footer .divider {
     <div class="blob blob-1"></div>
     <div class="blob blob-2"></div>
     <div class="blob blob-3"></div>
-  </div>
-
-  <!-- Fullscreen overlay -->
-  <div class="fullscreen-overlay" id="fullscreenOverlay">
-    <div class="fullscreen-header">
-      <div class="fullscreen-title" id="fullscreenTitle">menú-alimentos.pdf</div>
-      <button class="fullscreen-close" id="fullscreenClose" aria-label="Cerrar vista expandida">✕</button>
-    </div>
-    <div class="fullscreen-content">
-      <iframe class="fullscreen-frame" id="fullscreenFrame" src="" title="Visor expandido" allow="fullscreen"></iframe>
-    </div>
   </div>
 
   <div class="container">
@@ -585,7 +455,7 @@ footer .divider {
             </a>
           </div>
         </div>
-        <div class="pdf-container" id="pdfContainer">
+        <div class="pdf-container">
           <div class="loader" id="loader">
             <div class="spinner"></div>
           </div>
@@ -600,18 +470,6 @@ footer .divider {
             <p>Abre este archivo HTML y reemplaza en <code>MENU_URLS</code> los valores placeholder por tus enlaces de Google Drive.</p>
           </div>
           <iframe class="pdf-frame" id="pdfFrame" src="" title="Visor de menú" style="opacity:0;"></iframe>
-          <!-- Overlay invisible para capturar clicks/toques -->
-          <div class="click-overlay" id="clickOverlay">
-            <div class="expand-hint">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="15 3 21 3 21 9"></polyline>
-                <polyline points="9 21 3 21 3 15"></polyline>
-                <line x1="21" y1="3" x2="14" y2="10"></line>
-                <line x1="3" y1="21" x2="10" y2="14"></line>
-              </svg>
-              Expandir
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -648,13 +506,6 @@ footer .divider {
     const viewerTitle = document.getElementById('viewerTitle');
     const tabs = document.querySelectorAll('.tab');
     const indicator = document.querySelector('.tab-indicator');
-    const pdfContainer = document.getElementById('pdfContainer');
-    const clickOverlay = document.getElementById('clickOverlay');
-    
-    const fullscreenOverlay = document.getElementById('fullscreenOverlay');
-    const fullscreenFrame = document.getElementById('fullscreenFrame');
-    const fullscreenTitle = document.getElementById('fullscreenTitle');
-    const fullscreenClose = document.getElementById('fullscreenClose');
 
     const TAB_INFO = {
       food:   { title: 'menú-alimentos.pdf' },
@@ -662,7 +513,6 @@ footer .divider {
     };
 
     let currentTab = null;
-    let currentFullUrl = null;
 
     function updateIndicator(tabName) {
       const activeBtn = document.querySelector(`.tab[data-tab="${tabName}"]`);
@@ -671,24 +521,6 @@ footer .divider {
       const parentRect = activeBtn.parentElement.getBoundingClientRect();
       indicator.style.left = (rect.left - parentRect.left) + 'px';
       indicator.style.width = rect.width + 'px';
-    }
-
-    function openFullscreen() {
-      if (!currentFullUrl || isPlaceholder(MENU_URLS[currentTab])) return;
-      
-      fullscreenTitle.textContent = viewerTitle.textContent;
-      fullscreenFrame.src = currentFullUrl;
-      fullscreenOverlay.classList.add('active');
-      document.body.style.overflow = 'hidden';
-    }
-
-    function closeFullscreen() {
-      fullscreenOverlay.classList.remove('active');
-      // Limpiamos el src después de un pequeño delay para asegurar la transición
-      setTimeout(() => {
-        fullscreenFrame.src = 'about:blank';
-      }, 400);
-      document.body.style.overflow = '';
     }
 
     function setActiveTab(tabName) {
@@ -713,8 +545,6 @@ footer .divider {
         loader.classList.remove('visible');
         openFullBtn.href = '#';
         downloadBtn.href = '#';
-        currentFullUrl = null;
-        clickOverlay.style.display = 'none';
         return;
       }
 
@@ -722,17 +552,13 @@ footer .divider {
       if (!id) {
         frame.style.opacity = '0';
         placeholder.style.display = 'flex';
-        currentFullUrl = null;
-        clickOverlay.style.display = 'none';
         return;
       }
 
       const previewUrl = `https://drive.google.com/file/d/${id}/preview`;
       const viewUrl = `https://drive.google.com/file/d/${id}/view`;
-      currentFullUrl = viewUrl;
 
       placeholder.style.display = 'none';
-      clickOverlay.style.display = 'flex';
       loader.classList.add('visible');
       frame.classList.add('fade');
 
@@ -755,38 +581,8 @@ footer .divider {
       }, 2500);
     }
 
-    // Event Listeners
     tabs.forEach(t => {
       t.addEventListener('click', () => setActiveTab(t.dataset.tab));
-    });
-
-    // Click/touch en el overlay invisible
-    clickOverlay.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (placeholder.style.display !== 'none') return;
-      openFullscreen();
-    });
-
-    // También con touch para móviles
-    clickOverlay.addEventListener('touchend', (e) => {
-      e.stopPropagation();
-      e.preventDefault();
-      if (placeholder.style.display !== 'none') return;
-      openFullscreen();
-    });
-
-    fullscreenClose.addEventListener('click', closeFullscreen);
-    
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && fullscreenOverlay.classList.contains('active')) {
-        closeFullscreen();
-      }
-    });
-
-    fullscreenOverlay.addEventListener('click', (e) => {
-      if (e.target === fullscreenOverlay) {
-        closeFullscreen();
-      }
     });
 
     window.addEventListener('load', () => setActiveTab('food'));
