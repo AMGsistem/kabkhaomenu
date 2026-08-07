@@ -280,6 +280,32 @@ h1 .italic {
   position: relative;
   background: white;
   overflow: hidden;
+  cursor: pointer;
+}
+
+.pdf-container::after {
+  content: '';
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  background: rgba(0,0,0,0.7);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 3 21 3 21 9'%3E%3C/polyline%3E%3Cpolyline points='9 21 3 21 3 15'%3E%3C/polyline%3E%3Cline x1='21' y1='3' x2='14' y2='10'%3E%3C/line%3E%3Cline x1='3' y1='21' x2='10' y2='14'%3E%3C/line%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.pdf-container:hover::after {
+  opacity: 1;
 }
 
 .pdf-frame {
@@ -329,6 +355,7 @@ h1 .italic {
   text-align: center;
   padding: 2rem;
   background: linear-gradient(135deg, #fafaf7, #f0ede5);
+  pointer-events: none;
 }
 
 .placeholder svg {
@@ -362,6 +389,74 @@ h1 .italic {
   color: var(--accent);
 }
 
+/* Fullscreen overlay */
+.fullscreen-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.fullscreen-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.fullscreen-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  flex-shrink: 0;
+}
+
+.fullscreen-title {
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+.fullscreen-close {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  font-size: 1.2rem;
+}
+
+.fullscreen-close:hover {
+  background: rgba(255,255,255,0.25);
+  transform: scale(1.05);
+}
+
+.fullscreen-content {
+  flex: 1;
+  position: relative;
+}
+
+.fullscreen-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: white;
+}
+
 /* Footer */
 footer {
   text-align: center;
@@ -391,6 +486,9 @@ footer .divider {
   .blob-1 { width: 300px; height: 300px; }
   .blob-2 { width: 380px; height: 380px; }
   .blob-3 { width: 260px; height: 260px; }
+  
+  .fullscreen-header { padding: 0.8rem 1rem; }
+  .fullscreen-close { width: 36px; height: 36px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -406,6 +504,19 @@ footer .divider {
     <div class="blob blob-1"></div>
     <div class="blob blob-2"></div>
     <div class="blob blob-3"></div>
+  </div>
+
+  <!-- Fullscreen overlay -->
+  <div class="fullscreen-overlay" id="fullscreenOverlay">
+    <div class="fullscreen-header">
+      <div class="fullscreen-title" id="fullscreenTitle">menú-alimentos.pdf</div>
+      <button class="fullscreen-close" id="fullscreenClose" aria-label="Cerrar vista expandida">
+        ✕
+      </button>
+    </div>
+    <div class="fullscreen-content">
+      <iframe class="fullscreen-frame" id="fullscreenFrame" src="" title="Visor expandido"></iframe>
+    </div>
   </div>
 
   <div class="container">
@@ -463,7 +574,7 @@ footer .divider {
             </a>
           </div>
         </div>
-        <div class="pdf-container">
+        <div class="pdf-container" id="pdfContainer" title="Toca para expandir">
           <div class="loader" id="loader">
             <div class="spinner"></div>
           </div>
@@ -505,9 +616,9 @@ footer .divider {
     // ╚══════════════════════════════════════════════════════════════════╝
 
     const MENU_URLS = {
-  food:   "https://drive.google.com/file/d/1l6q1HQ6_crc2fp6bALq2Pp5HMgnkYv9c/view?usp=drivesdk",  //  ←  PDF DE ALIMENTOS
-  drinks: "https://drive.google.com/file/d/18uHy7L4yf1rcDDxjCNJubnqYpc4f72v5/view?usp=drivesdk"   //  ←  PDF DE BEBIDAS
-};
+      food:   "https://drive.google.com/file/d/1l6q1HQ6_crc2fp6bALq2Pp5HMgnkYv9c/view?usp=drivesdk",
+      drinks: "https://drive.google.com/file/d/18uHy7L4yf1rcDDxjCNJubnqYpc4f72v5/view?usp=drivesdk"
+    };
 
     // ─────────────────────────────────────────────────────────────────
     //  NO EDITAR NADA DEBAJO DE ESTA LÍNEA
@@ -533,6 +644,13 @@ footer .divider {
     const viewerTitle = document.getElementById('viewerTitle');
     const tabs = document.querySelectorAll('.tab');
     const indicator = document.querySelector('.tab-indicator');
+    const pdfContainer = document.getElementById('pdfContainer');
+    
+    // Fullscreen elements
+    const fullscreenOverlay = document.getElementById('fullscreenOverlay');
+    const fullscreenFrame = document.getElementById('fullscreenFrame');
+    const fullscreenTitle = document.getElementById('fullscreenTitle');
+    const fullscreenClose = document.getElementById('fullscreenClose');
 
     const TAB_INFO = {
       food:   { title: 'menú-alimentos.pdf' },
@@ -540,6 +658,7 @@ footer .divider {
     };
 
     let currentTab = null;
+    let currentFullUrl = null;
 
     function updateIndicator(tabName) {
       const activeBtn = document.querySelector(`.tab[data-tab="${tabName}"]`);
@@ -548,6 +667,21 @@ footer .divider {
       const parentRect = activeBtn.parentElement.getBoundingClientRect();
       indicator.style.left = (rect.left - parentRect.left) + 'px';
       indicator.style.width = rect.width + 'px';
+    }
+
+    function openFullscreen() {
+      if (!currentFullUrl || isPlaceholder(MENU_URLS[currentTab])) return;
+      
+      fullscreenTitle.textContent = viewerTitle.textContent;
+      fullscreenFrame.src = currentFullUrl;
+      fullscreenOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeFullscreen() {
+      fullscreenOverlay.classList.remove('active');
+      fullscreenFrame.src = 'about:blank';
+      document.body.style.overflow = '';
     }
 
     function setActiveTab(tabName) {
@@ -572,6 +706,7 @@ footer .divider {
         loader.classList.remove('visible');
         openFullBtn.href = '#';
         downloadBtn.href = '#';
+        currentFullUrl = null;
         return;
       }
 
@@ -579,11 +714,13 @@ footer .divider {
       if (!id) {
         frame.style.opacity = '0';
         placeholder.style.display = 'flex';
+        currentFullUrl = null;
         return;
       }
 
       const previewUrl = `https://drive.google.com/file/d/${id}/preview`;
       const viewUrl = `https://drive.google.com/file/d/${id}/view`;
+      currentFullUrl = viewUrl;
 
       placeholder.style.display = 'none';
       loader.classList.add('visible');
@@ -609,8 +746,33 @@ footer .divider {
       }, 2500);
     }
 
+    // Event Listeners
     tabs.forEach(t => {
       t.addEventListener('click', () => setActiveTab(t.dataset.tab));
+    });
+
+    // Click/touch en el contenedor del PDF para expandir
+    pdfContainer.addEventListener('click', (e) => {
+      // No expandir si se hace clic en el placeholder
+      if (placeholder.style.display !== 'none') return;
+      openFullscreen();
+    });
+
+    // Cerrar fullscreen
+    fullscreenClose.addEventListener('click', closeFullscreen);
+    
+    // Cerrar con tecla Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && fullscreenOverlay.classList.contains('active')) {
+        closeFullscreen();
+      }
+    });
+
+    // Cerrar haciendo clic fuera del contenido
+    fullscreenOverlay.addEventListener('click', (e) => {
+      if (e.target === fullscreenOverlay) {
+        closeFullscreen();
+      }
     });
 
     window.addEventListener('load', () => setActiveTab('food'));
