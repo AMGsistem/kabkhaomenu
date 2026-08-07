@@ -36,7 +36,6 @@ body {
   letter-spacing: -0.01em;
 }
 
-/* Fondo animado con blobs */
 .bg-mesh {
   position: fixed;
   inset: 0;
@@ -80,7 +79,6 @@ body {
   flex-direction: column;
 }
 
-/* Header */
 header {
   text-align: center;
   padding: 3rem 0 2rem;
@@ -148,7 +146,6 @@ h1 .italic {
   font-weight: 400;
 }
 
-/* Tabs */
 .tabs-wrap {
   display: flex;
   justify-content: center;
@@ -204,7 +201,6 @@ h1 .italic {
   box-shadow: 0 4px 20px rgba(0,0,0,0.25);
 }
 
-/* Visor PDF */
 .viewer-wrap {
   flex: 1;
   margin-bottom: 2rem;
@@ -280,32 +276,50 @@ h1 .italic {
   position: relative;
   background: white;
   overflow: hidden;
-  cursor: pointer;
 }
 
-.pdf-container::after {
-  content: '';
+/* Overlay invisible para capturar clicks */
+.click-overlay {
   position: absolute;
-  bottom: 16px;
-  right: 16px;
-  width: 36px;
-  height: 36px;
-  background: rgba(0,0,0,0.7);
-  border-radius: 8px;
+  inset: 0;
+  z-index: 10;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='15 3 21 3 21 9'%3E%3C/polyline%3E%3Cpolyline points='9 21 3 21 3 15'%3E%3C/polyline%3E%3Cline x1='21' y1='3' x2='14' y2='10'%3E%3C/line%3E%3Cline x1='3' y1='21' x2='10' y2='14'%3E%3C/line%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: center;
+  transition: background 0.3s ease;
 }
 
-.pdf-container:hover::after {
+.click-overlay:hover {
+  background: rgba(0,0,0,0.08);
+}
+
+.expand-hint {
+  background: rgba(0,0,0,0.75);
+  color: white;
+  padding: 0.6rem 1.2rem;
+  border-radius: 100px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s ease;
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.click-overlay:hover .expand-hint {
   opacity: 1;
+  transform: translateY(0);
+}
+
+.expand-hint svg {
+  width: 16px;
+  height: 16px;
 }
 
 .pdf-frame {
@@ -314,11 +328,12 @@ h1 .italic {
   border: none;
   background: white;
   transition: opacity 0.4s ease;
+  position: relative;
+  z-index: 1;
 }
 
 .pdf-frame.fade { opacity: 0; }
 
-/* Loader */
 .loader {
   position: absolute;
   inset: 0;
@@ -344,7 +359,6 @@ h1 .italic {
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* Placeholder cuando no hay URL */
 .placeholder {
   position: absolute;
   inset: 0;
@@ -393,7 +407,7 @@ h1 .italic {
 .fullscreen-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.85);
+  background: rgba(0,0,0,0.92);
   z-index: 9999;
   display: flex;
   flex-direction: column;
@@ -412,7 +426,7 @@ h1 .italic {
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.5rem;
-  background: rgba(0,0,0,0.3);
+  background: rgba(0,0,0,0.4);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   flex-shrink: 0;
@@ -429,20 +443,21 @@ h1 .italic {
   background: rgba(255,255,255,0.15);
   border: 1px solid rgba(255,255,255,0.2);
   color: white;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
-  font-size: 1.2rem;
+  font-size: 1.3rem;
+  line-height: 1;
 }
 
 .fullscreen-close:hover {
   background: rgba(255,255,255,0.25);
-  transform: scale(1.05);
+  transform: scale(1.08);
 }
 
 .fullscreen-content {
@@ -457,7 +472,6 @@ h1 .italic {
   background: white;
 }
 
-/* Footer */
 footer {
   text-align: center;
   padding: 1.5rem 0 1rem;
@@ -472,7 +486,6 @@ footer .divider {
   margin: 0 auto 1rem;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .container { padding: 1rem 1.25rem; }
   header { padding: 2rem 0 1.5rem; }
@@ -486,9 +499,9 @@ footer .divider {
   .blob-1 { width: 300px; height: 300px; }
   .blob-2 { width: 380px; height: 380px; }
   .blob-3 { width: 260px; height: 260px; }
-  
   .fullscreen-header { padding: 0.8rem 1rem; }
-  .fullscreen-close { width: 36px; height: 36px; }
+  .fullscreen-close { width: 40px; height: 40px; font-size: 1.2rem; }
+  .expand-hint { font-size: 0.75rem; padding: 0.5rem 1rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -510,12 +523,10 @@ footer .divider {
   <div class="fullscreen-overlay" id="fullscreenOverlay">
     <div class="fullscreen-header">
       <div class="fullscreen-title" id="fullscreenTitle">menú-alimentos.pdf</div>
-      <button class="fullscreen-close" id="fullscreenClose" aria-label="Cerrar vista expandida">
-        ✕
-      </button>
+      <button class="fullscreen-close" id="fullscreenClose" aria-label="Cerrar vista expandida">✕</button>
     </div>
     <div class="fullscreen-content">
-      <iframe class="fullscreen-frame" id="fullscreenFrame" src="" title="Visor expandido"></iframe>
+      <iframe class="fullscreen-frame" id="fullscreenFrame" src="" title="Visor expandido" allow="fullscreen"></iframe>
     </div>
   </div>
 
@@ -574,7 +585,7 @@ footer .divider {
             </a>
           </div>
         </div>
-        <div class="pdf-container" id="pdfContainer" title="Toca para expandir">
+        <div class="pdf-container" id="pdfContainer">
           <div class="loader" id="loader">
             <div class="spinner"></div>
           </div>
@@ -589,6 +600,18 @@ footer .divider {
             <p>Abre este archivo HTML y reemplaza en <code>MENU_URLS</code> los valores placeholder por tus enlaces de Google Drive.</p>
           </div>
           <iframe class="pdf-frame" id="pdfFrame" src="" title="Visor de menú" style="opacity:0;"></iframe>
+          <!-- Overlay invisible para capturar clicks/toques -->
+          <div class="click-overlay" id="clickOverlay">
+            <div class="expand-hint">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <polyline points="9 21 3 21 3 15"></polyline>
+                <line x1="21" y1="3" x2="14" y2="10"></line>
+                <line x1="3" y1="21" x2="10" y2="14"></line>
+              </svg>
+              Expandir
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -600,29 +623,10 @@ footer .divider {
   </div>
 
   <script>
-    // ╔══════════════════════════════════════════════════════════════════╗
-    // ║                                                                    ║
-    // ║   ★★  AQUÍ PONES TUS URLs DE GOOGLE DRIVE  ★★                     ║
-    // ║                                                                    ║
-    // ║   PASOS:                                                           ║
-    // ║   1. Sube tus dos PDFs a Google Drive                              ║
-    // ║   2. Click derecho sobre cada PDF → "Compartir" →                  ║
-    // ║      cambia a "Cualquiera con el enlace" → "Copiar enlace"        ║
-    // ║   3. El enlace se ve así:                                          ║
-    // ║      https://drive.google.com/file/d/1AbC23Def456/view?usp=sharing║
-    // ║   4. Pega ese enlace COMPLETO entre las comillas de abajo          ║
-    // ║      (también funciona si pegas solo el ID)                        ║
-    // ║                                                                    ║
-    // ╚══════════════════════════════════════════════════════════════════╝
-
     const MENU_URLS = {
       food:   "https://drive.google.com/file/d/1l6q1HQ6_crc2fp6bALq2Pp5HMgnkYv9c/view?usp=drivesdk",
       drinks: "https://drive.google.com/file/d/18uHy7L4yf1rcDDxjCNJubnqYpc4f72v5/view?usp=drivesdk"
     };
-
-    // ─────────────────────────────────────────────────────────────────
-    //  NO EDITAR NADA DEBAJO DE ESTA LÍNEA
-    // ─────────────────────────────────────────────────────────────────
 
     function extractDriveId(input) {
       if (!input) return null;
@@ -645,8 +649,8 @@ footer .divider {
     const tabs = document.querySelectorAll('.tab');
     const indicator = document.querySelector('.tab-indicator');
     const pdfContainer = document.getElementById('pdfContainer');
+    const clickOverlay = document.getElementById('clickOverlay');
     
-    // Fullscreen elements
     const fullscreenOverlay = document.getElementById('fullscreenOverlay');
     const fullscreenFrame = document.getElementById('fullscreenFrame');
     const fullscreenTitle = document.getElementById('fullscreenTitle');
@@ -680,7 +684,10 @@ footer .divider {
 
     function closeFullscreen() {
       fullscreenOverlay.classList.remove('active');
-      fullscreenFrame.src = 'about:blank';
+      // Limpiamos el src después de un pequeño delay para asegurar la transición
+      setTimeout(() => {
+        fullscreenFrame.src = 'about:blank';
+      }, 400);
       document.body.style.overflow = '';
     }
 
@@ -707,6 +714,7 @@ footer .divider {
         openFullBtn.href = '#';
         downloadBtn.href = '#';
         currentFullUrl = null;
+        clickOverlay.style.display = 'none';
         return;
       }
 
@@ -715,6 +723,7 @@ footer .divider {
         frame.style.opacity = '0';
         placeholder.style.display = 'flex';
         currentFullUrl = null;
+        clickOverlay.style.display = 'none';
         return;
       }
 
@@ -723,6 +732,7 @@ footer .divider {
       currentFullUrl = viewUrl;
 
       placeholder.style.display = 'none';
+      clickOverlay.style.display = 'flex';
       loader.classList.add('visible');
       frame.classList.add('fade');
 
@@ -738,7 +748,6 @@ footer .divider {
         frame.style.opacity = '1';
       };
 
-      // Fallback por si onload no dispara en iframes cross-origin
       setTimeout(() => {
         loader.classList.remove('visible');
         frame.classList.remove('fade');
@@ -751,24 +760,29 @@ footer .divider {
       t.addEventListener('click', () => setActiveTab(t.dataset.tab));
     });
 
-    // Click/touch en el contenedor del PDF para expandir
-    pdfContainer.addEventListener('click', (e) => {
-      // No expandir si se hace clic en el placeholder
+    // Click/touch en el overlay invisible
+    clickOverlay.addEventListener('click', (e) => {
+      e.stopPropagation();
       if (placeholder.style.display !== 'none') return;
       openFullscreen();
     });
 
-    // Cerrar fullscreen
+    // También con touch para móviles
+    clickOverlay.addEventListener('touchend', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      if (placeholder.style.display !== 'none') return;
+      openFullscreen();
+    });
+
     fullscreenClose.addEventListener('click', closeFullscreen);
     
-    // Cerrar con tecla Escape
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && fullscreenOverlay.classList.contains('active')) {
         closeFullscreen();
       }
     });
 
-    // Cerrar haciendo clic fuera del contenido
     fullscreenOverlay.addEventListener('click', (e) => {
       if (e.target === fullscreenOverlay) {
         closeFullscreen();
