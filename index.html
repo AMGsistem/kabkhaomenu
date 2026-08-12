@@ -231,12 +231,7 @@ h1 .italic {
   flex-shrink: 0;
 }
 
-.dots { display: flex; gap: 0.4rem; }
-.dot { width: 11px; height: 11px; border-radius: 50%; }
-.dot:nth-child(1) { background: #ff5f57; }
-.dot:nth-child(2) { background: #febc2e; }
-.dot:nth-child(3) { background: #28c840; }
-
+/* Eliminados los dots */
 .viewer-title {
   font-size: 0.82rem;
   color: var(--muted);
@@ -270,6 +265,51 @@ h1 .italic {
 
 .action-btn svg { width: 13px; height: 13px; }
 
+/* Barra de paginación externa (ahora entre header e imagen) */
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255,255,255,0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.page-btn {
+  background: rgba(0,0,0,0.06);
+  border: 1px solid var(--border);
+  color: var(--fg);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: rgba(0,0,0,0.12);
+}
+
+.page-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.page-indicator {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--muted);
+  min-width: 50px;
+  text-align: center;
+}
+
 .image-container {
   flex: 1;
   position: relative;
@@ -287,53 +327,6 @@ h1 .italic {
   transition: opacity 0.3s ease;
   user-select: none;
   -webkit-user-drag: none;
-}
-
-.pagination {
-  position: absolute;
-  bottom: 1.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  padding: 0.5rem 1rem;
-  border-radius: 100px;
-  z-index: 10;
-}
-
-.page-btn {
-  background: rgba(255,255,255,0.2);
-  border: none;
-  color: white;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.3s ease;
-}
-
-.page-btn:hover:not(:disabled) {
-  background: rgba(255,255,255,0.35);
-}
-
-.page-btn:disabled {
-  opacity: 0.3;
-  cursor: default;
-}
-
-.page-indicator {
-  color: white;
-  font-size: 0.85rem;
-  font-weight: 500;
-  min-width: 50px;
-  text-align: center;
 }
 
 .loader {
@@ -431,8 +424,8 @@ footer .divider {
   .blob-1 { width: 300px; height: 300px; }
   .blob-2 { width: 380px; height: 380px; }
   .blob-3 { width: 260px; height: 260px; }
-  .pagination { gap: 0.5rem; padding: 0.4rem 0.8rem; bottom: 1rem; }
-  .page-btn { width: 32px; height: 32px; }
+  .pagination-bar { gap: 0.5rem; padding: 0.4rem 0.8rem; }
+  .page-btn { width: 28px; height: 28px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -480,12 +473,8 @@ footer .divider {
     <div class="viewer-wrap">
       <div class="viewer-card">
         <div class="viewer-header">
-          <div class="dots">
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-          </div>
-          <div class="viewer-title" id="viewerTitle">menú-alimentos.pdf</div>
+          <!-- Se eliminaron los dots -->
+          <div class="viewer-title" id="viewerTitle">menú-alimentos</div>
           <div class="viewer-actions">
             <a href="#" id="downloadBtn" target="_blank" rel="noopener" class="action-btn" title="Descargar">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -505,6 +494,18 @@ footer .divider {
             </a>
           </div>
         </div>
+
+        <!-- Nueva barra de paginación fuera de la imagen -->
+        <div class="pagination-bar" id="paginationBar" style="display: none;">
+          <button class="page-btn" id="prevPage" aria-label="Página anterior">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <span class="page-indicator" id="pageIndicator">1 / 1</span>
+          <button class="page-btn" id="nextPage" aria-label="Página siguiente">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+
         <div class="image-container" id="imageContainer">
           <div class="loader" id="loader">
             <div class="spinner"></div>
@@ -520,15 +521,6 @@ footer .divider {
             <p>Abre este archivo HTML y reemplaza en <code>MENU_IMAGES</code> los valores placeholder por tus enlaces de Google Drive.</p>
           </div>
           <img id="menuImage" src="" alt="Menú" style="display: none;" />
-          <div class="pagination" id="pagination" style="display: none;">
-            <button class="page-btn" id="prevPage" aria-label="Página anterior">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-            </button>
-            <span class="page-indicator" id="pageIndicator">1 / 1</span>
-            <button class="page-btn" id="nextPage" aria-label="Página siguiente">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-            </button>
-          </div>
         </div>
       </div>
     </div>
@@ -570,7 +562,7 @@ footer .divider {
     const viewerTitle = document.getElementById('viewerTitle');
     const tabs = document.querySelectorAll('.tab');
     const indicator = document.querySelector('.tab-indicator');
-    const pagination = document.getElementById('pagination');
+    const paginationBar = document.getElementById('paginationBar');
     const prevBtn = document.getElementById('prevPage');
     const nextBtn = document.getElementById('nextPage');
     const pageIndicator = document.getElementById('pageIndicator');
@@ -592,15 +584,13 @@ footer .divider {
       indicator.style.width = rect.width + 'px';
     }
 
-    // ✅ URL corregida: ahora usa la miniatura de Google Drive (más fiable)
     function getImageUrl(id) {
-      // 'sz=w2000' da una imagen de hasta 2000px de ancho, suficiente para verse nítida
       return `https://drive.google.com/thumbnail?sz=w2000&id=${id}`;
     }
 
     function showPlaceholder() {
       menuImage.style.display = 'none';
-      pagination.style.display = 'none';
+      paginationBar.style.display = 'none';
       placeholder.style.display = 'flex';
       loader.classList.remove('visible');
       openFullBtn.href = '#';
@@ -620,7 +610,7 @@ footer .divider {
       const imageData = categoryImages[index];
       const url = getImageUrl(imageData.id);
       
-      viewerTitle.textContent = `${TAB_INFO[currentTab].title} - Hoja ${index + 1}`;
+      viewerTitle.textContent = `${TAB_INFO[currentTab].title} — Hoja ${index + 1}`;
       
       const viewUrl = `https://drive.google.com/file/d/${imageData.id}/view`;
       openFullBtn.href = viewUrl;
@@ -634,7 +624,7 @@ footer .divider {
         menuImage.src = url;
         menuImage.style.display = 'block';
         loader.classList.remove('visible');
-        pagination.style.display = 'flex';
+        paginationBar.style.display = 'flex';
         updatePaginationButtons();
       };
       img.onerror = () => {
